@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For My Liling 🌸</title>
+    
+    <!-- Romantic Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #fff0f5; 
+            --primary-pink: #ffb6c1; 
+            --dark-pink: #d87093; 
+            --text-main: #5a4a4e;
+            --text-light: #8e7d7f;
+            --paper-color: #fdfbf7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at center, #fffbfc 0%, var(--bg-color) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            min-height: 100dvh; 
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overscroll-behavior: none; 
+            overflow-y: hidden; 
+        }
+
+        body.scrollable {
+            overflow-y: auto;
+        }
+
+        /* --- Custom Chrome Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-pink); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--dark-pink); }
+
+        /* --- OVERLAY SCREENS --- */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; 
+            height: 100vh; height: 100dvh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(10px, 5vw, 20px);
+            z-index: 100;
+            transition: opacity 0.8s ease, visibility 0.8s;
+            overflow: hidden;
+        }
+
+        /* --- GATEKEEPER SCREEN --- */
+        #gatekeeper {
+            background: rgba(255, 240, 245, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .gate-card {
+            background: white;
+            padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 5vw, 2rem);
+            border-radius: 20px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(216, 112, 147, 0.15);
+            border: 2px dashed var(--primary-pink);
+        }
+
+        .gate-title {
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.8rem, 6vw, 2.2rem); 
+            color: var(--dark-pink);
+            margin-bottom: 2rem;
+            min-height: 80px;
+            line-height: 1.2;
+        }
+
+        .buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        .btn {
+            font-family: 'Quicksand', sans-serif;
+            border: none; border-radius: 30px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 4vw, 1rem);
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+
+        #btn-yes {
+            background: var(--dark-pink); color: white;
+            padding: 12px 28px; box-shadow: 0 4px 15px rgba(216, 112, 147, 0.3);
+        }
+        #btn-yes:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(216, 112, 147, 0.4); }
+
+        #btn-no {
+            background: white; color: var(--dark-pink);
+            padding: 12px 28px; border: 1px solid var(--primary-pink);
+        }
+
+        /* --- MUSIC PROMPT --- */
+        #music-prompt {
+            background: var(--bg-color); z-index: 90;
+            opacity: 0; visibility: hidden; text-align: center;
+        }
+        #music-prompt.visible { opacity: 1; visibility: visible; }
+
+        .prompt-content h2 {
+            font-family: 'Caveat', cursive; font-size: clamp(2.2rem, 8vw, 2.8rem);
+            color: var(--dark-pink); margin-bottom: 0.5rem;
+        }
+        .prompt-content p.subtitle { color: var(--text-light); margin-bottom: 1.5rem; font-size: clamp(0.9rem, 4vw, 1rem); }
+        
+        .song-title {
+            font-weight: 700; color: var(--dark-pink); font-size: clamp(1rem, 4vw, 1.2rem);
+            margin-bottom: 2rem; background: rgba(255, 255, 255, 0.6);
+            padding: 10px 20px; border-radius: 20px; display: inline-block;
+        }
+
+        #btn-play-music {
+            background: var(--dark-pink); color: white; padding: 14px 35px;
+            font-size: clamp(1rem, 4vw, 1.1rem); box-shadow: 0 6px 20px rgba(216, 112, 147, 0.3);
+        }
+        #btn-play-music:disabled { background: #e39eb1; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .spinner {
+            display: inline-block; width: 18px; height: 18px;
+            border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%;
+            border-top-color: white; animation: spin 1s ease-in-out infinite; margin-left: 10px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- SLIDESHOW SCREEN --- */
+        #slideshow-screen {
+            background: radial-gradient(circle at center, #fffbfc 0%, var(--bg-color) 100%);
+            z-index: 80; opacity: 0; visibility: hidden; flex-direction: column; justify-content: center;
+        }
+        #slideshow-screen.visible { opacity: 1; visibility: visible; }
+
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+        .slideshow-layout {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; max-width: 900px; gap: 2rem; z-index: 10;
+        }
+
+        @media (min-width: 768px) {
+            .slideshow-layout { flex-direction: row; justify-content: space-around; text-align: left; }
+            .slideshow-text-container { align-items: flex-start !important; text-align: left !important; padding-right: 2rem; }
+        }
+
+        .slideshow-text-container { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; flex: 1; padding: 10px; }
+        .slideshow-title { font-family: 'Caveat', cursive; font-size: clamp(3.5rem, 8vw, 5.5rem); color: var(--dark-pink); margin-bottom: 1rem; letter-spacing: 2px; animation: heartbeat 2.5s infinite; }
+
+        /* Typing Animation Subtitle */
+        .typing-subtitle {
+            font-family: 'Quicksand', sans-serif; font-size: clamp(1rem, 3.5vw, 1.3rem); color: var(--text-main);
+            max-width: 100%; line-height: 1.6; cursor: pointer; transition: all 0.3s ease; min-height: 100px;
+        }
+        .typing-subtitle:hover { color: var(--dark-pink); transform: scale(1.02); }
+        .typing-cursor::after { content: '|'; animation: blink 1s step-start infinite; color: var(--dark-pink); }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .click-hint {
+            display: block; font-size: clamp(0.75rem, 3vw, 0.85rem); color: var(--dark-pink);
+            margin-top: 20px; font-weight: 600; opacity: 0; animation: fadeIn 2s ease forwards; animation-delay: 15s; 
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .slideshow-frame-wrapper { flex: 1; display: flex; justify-content: center; align-items: center; width: 100%; }
+        .slideshow-frame {
+            background: white; padding: clamp(10px, 3vw, 15px) clamp(10px, 3vw, 15px) clamp(40px, 10vw, 60px) clamp(10px, 3vw, 15px);
+            box-shadow: 0 20px 50px rgba(216, 112, 147, 0.3); border-radius: 4px; width: 90%; max-width: 380px;
+            aspect-ratio: 4 / 5; position: relative;
+        }
+        .slideshow-frame::before {
+            content: ''; position: absolute; top: -15px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+            width: 130px; height: 35px; background: rgba(255, 182, 193, 0.8); backdrop-filter: blur(2px);
+            z-index: 15; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .slideshow-frame::after {
+            content: 'You & Me 🤍'; position: absolute; bottom: clamp(8px, 2vw, 12px); left: 0;
+            width: 100%; text-align: center; font-family: 'Caveat', cursive; font-size: clamp(1.5rem, 6vw, 2.2rem); color: var(--text-main);
+        }
+        .slide-img-container { width: 100%; height: 100%; position: relative; background: #eee; overflow: hidden; border-radius: 2px; }
+        .slide-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.15); transition: opacity 1.5s ease-in-out, transform 5s ease-out; }
+        .slide-img.active { opacity: 1; transform: scale(1); }
+
+        .floating-blossom { position: absolute; z-index: 5; opacity: 0.6; animation: floatUp linear forwards; }
+        @keyframes floatUp { to { transform: translateY(-120vh) rotate(360deg); } }
+
+        /* --- MAIN APP (SCRAPBOOK LETTERS) --- */
+        #app {
+            width: 100%; max-width: 1000px; padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+            opacity: 0; visibility: hidden; transition: opacity 1.5s ease; position: absolute; top: 0; left: 0; right: 0; margin: auto;
+        }
+        #app.visible { opacity: 1; visibility: visible; position: relative; }
+
+        header { text-align: center; margin-bottom: clamp(2rem, 8vw, 4rem); }
+        header h1 { font-family: 'Caveat', cursive; font-size: clamp(2.8rem, 10vw, 3.5rem); color: var(--dark-pink); margin-bottom: 0.5rem; }
+        header p { color: var(--text-light); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; font-size: clamp(0.75rem, 3vw, 0.9rem); }
+
+        .gallery { display: flex; justify-content: center; gap: clamp(1.5rem, 4vw, 2.5rem); margin-top: 4rem; }
+
+        /* Gentle floating animation for the main polaroid */
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+        }
+
+        .polaroid {
+            background: white; padding: 15px 15px 30px 15px; box-shadow: 0 10px 25px rgba(216, 112, 147, 0.2);
+            border-radius: 4px; width: 100%; max-width: 320px; cursor: pointer; position: relative;
+            animation: gentleFloat 4s ease-in-out infinite; /* Added float animation */
+            transition: box-shadow 0.3s ease;
+        }
+        .polaroid:hover {
+            animation: none; /* Stops floating on hover */
+            transform: scale(1.05) rotate(0deg) !important; 
+            box-shadow: 0 15px 35px rgba(216, 112, 147, 0.4);
+            z-index: 10;
+        }
+        .polaroid::before {
+            content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-2deg);
+            width: 100px; height: 30px; background: rgba(255, 182, 193, 0.6); backdrop-filter: blur(2px); z-index: 2;
+        }
+
+        .polaroid-img { width: 100%; aspect-ratio: 1 / 1; background: #eee; margin-bottom: 15px; overflow: hidden; border-radius: 2px; }
+        .polaroid-img img { width: 100%; height: 100%; object-fit: cover; }
+        .polaroid-title { font-family: 'Caveat', cursive; font-size: clamp(1.8rem, 5vw, 2.2rem); color: var(--text-main); text-align: center; }
+
+        /* --- LETTER MODAL (EXPANDED FOR GALLERY) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 240, 245, 0.85);
+            backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; transition: all 0.5s ease; z-index: 200; padding: clamp(10px, 2vw, 20px);
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: var(--paper-color);
+            width: 100%; max-width: 800px; /* Made wider to fit the massive gallery */
+            max-height: 90vh; max-height: 90dvh; 
+            overflow-y: auto; overflow-x: hidden;
+            padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3.5rem);
+            border-radius: 12px; box-shadow: 0 20px 60px rgba(216, 112, 147, 0.25); position: relative;
+            transform: translateY(30px) scale(0.95); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(216, 112, 147, 0.2) 32px);
+            scroll-behavior: smooth;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+
+        .close-btn {
+            position: absolute; top: 1.5rem; right: 1.5rem; font-size: 1.5rem; color: var(--dark-pink);
+            background: rgba(255,255,255,0.9); border: 2px solid var(--primary-pink); cursor: pointer;
+            border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;
+            transition: all 0.3s ease; z-index: 10;
+        }
+        .close-btn:hover { background: var(--dark-pink); color: white; transform: rotate(90deg); }
+
+        .modal-date {
+            font-family: 'Quicksand', sans-serif; font-size: clamp(0.85rem, 3vw, 1rem); color: var(--dark-pink);
+            display: block; text-align: right; margin-bottom: 2rem; font-weight: 700; border-bottom: 2px dashed var(--primary-pink); padding-bottom: 10px;
+        }
+
+        .modal-body {
+            font-family: 'Caveat', cursive; font-size: clamp(1.5rem, 5vw, 1.9rem); line-height: 32px; 
+            color: var(--text-main); white-space: pre-wrap; margin-bottom: 3rem;
+        }
+
+        /* --- MODAL PHOTO GALLERY --- */
+        .modal-gallery-title {
+            font-family: 'Caveat', cursive; font-size: clamp(2.5rem, 6vw, 3.5rem); color: var(--dark-pink);
+            text-align: center; margin: 4rem 0 2rem 0; border-top: 2px dashed var(--primary-pink); padding-top: 3rem;
+        }
+
+        .modal-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            padding-bottom: 2rem;
+        }
+
+        /* Floating pop-up animation for grid images */
+        @keyframes popUp {
+            0% { opacity: 0; transform: translateY(30px) scale(0.9) rotate(calc(var(--rot) * 2)); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotate(var(--rot)); }
+        }
+
+        .modal-gallery-pic {
+            width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15); border: 4px solid white;
+            opacity: 0; /* Hidden initially for animation */
+            animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transition: transform 0.3s ease; cursor: pointer;
+        }
+        
+        .modal-gallery-pic:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 5; box-shadow: 0 10px 25px rgba(216, 112, 147, 0.4);
+        }
+
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music"></audio>
+
+    <!-- STEP 1: GATEKEEPER -->
+    <div class="fullscreen-overlay" id="gatekeeper">
+        <div class="gate-card">
+            <div class="gate-title" id="question">Hi Liling.<br><br>Kiss me first before I let you enter... love you.</div>
+            <div class="buttons">
+                <button class="btn" id="btn-yes">Kiss you</button>
+                <button class="btn" id="btn-no">Nope</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: MUSIC PROMPT -->
+    <div class="fullscreen-overlay" id="music-prompt">
+        <div class="prompt-content">
+            <h2>One last thing...</h2>
+            <p class="subtitle">Please play the music for the full experience ✨</p>
+            <div class="song-title">🎶 Play this...</div><br>
+            <button class="btn" id="btn-play-music">Play Music 🌸</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: CREATIVE SLIDESHOW SCREEN -->
+    <div class="fullscreen-overlay" id="slideshow-screen">
+        <div class="slideshow-layout">
+            <div class="slideshow-text-container">
+                <h2 class="slideshow-title">I LOVE YOU</h2>
+                <div class="typing-subtitle" id="btn-to-letters">
+                    <span id="typing-text" class="typing-cursor"></span>
+                    <span class="click-hint">(Click here whenever you're ready to read my letter 💌)</span>
+                </div>
+            </div>
+            <div class="slideshow-frame-wrapper">
+                <div class="slideshow-frame">
+                    <div class="slide-img-container" id="slideshow-container">
+                        <!-- Images get injected here via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 4: MAIN APP (SCRAPBOOK LETTERS) -->
+    <div id="app">
+        <header>
+            <h1>For My Liling</h1>
+            <p>Happy National Girlfriend's Day • August 1, 2026</p>
+        </header>
+
+        <div class="gallery" id="repository">
+            <!-- Single Polaroid injected by JS -->
+        </div>
+    </div>
+
+    <!-- LETTER MODAL -->
+    <div class="modal-overlay" id="letterModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeBtn">✖</button>
+            <span class="modal-date" id="modalDate"></span>
+            
+            <!-- The Long Text -->
+            <div class="modal-body" id="modalBody"></div>
+            
+            <!-- The 27 Photo Waterfall Gallery -->
+            <h3 class="modal-gallery-title">Our Sweetest Memories 🤍</h3>
+            <div class="modal-gallery" id="modalGallery">
+                <!-- 27 Images will pop up here dynamically! -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ====================================================================
+        // 💬 1. YOUR CUSTOM SLIDESHOW SUBTITLE 💬
+        // ====================================================================
+        const myCustomSubtitle = "Happy National Girlfriend Day Ling. Thank you for everything. Sobrang dami mong sinacrifice at ginawa for this relationship para mag work and maging strong. Siguro hindi mo ineexpect na gagawa ako neto for you. Kasi diba alala mo nung nagalit kapa saken kasi nagsasabi ako wala naman tayong label and sa mga time na napapaisip ako and hindi ko magets kung anu ba talaga tong relationship nato. Pero yun. Ito muna tignan mo muna yung mga pictures naten MWHEHEHEHE MISS KO NA TO HYYSSS I LOVE YOU MORE PICTURE LIKE DIS WITH YOUUU. AT SYEMPRE FOREVER ITU WMEHEWHUEUHWEUHWUEHWUHEW.";
+
+        // ====================================================================
+        // 🎵 2. YOUR 3 SONGS FOR THE PLAYLIST 🎵
+        // ====================================================================
+        const musicPlaylist = [
+            "Bawat Daan.mp3",
+            "Libu-Libong Buwan.mp3",  
+            "Araw-Araw.mp3"
+        ];
+
+        // ====================================================================
+        // 📸 3. DYNAMIC 1 TO 27 IMAGE GENERATOR 📸
+        // ====================================================================
+        const slideshowImages = [];
+        for (let i = 1; i <= 27; i++) {
+            if (i >= 11 && i <= 26) {
+                slideshowImages.push(`${i}.jpeg`);
+            } else {
+                slideshowImages.push(`${i}.jpg`);
+            }
+        }
+
+        // ====================================================================
+        // 💌 4. YOUR SINGLE LETTER FOR THE FINAL SCRAPBOOK 💌
+        // ====================================================================
+        const letterData = {
+            date: "August 1, 2026",
+            title: "Open Me 🤍",
+            image: "1.jpg", 
+            content: `Happy National Girlfriend Day! Hindi ko alam, Ling, kung may "s" ba 'to or wala, pero walang "s" na lang 'yung gagamitin ko kasi iisa ka lang naman. Thank you for everything—sa lahat ng ginawa mo at sa lahat ng tiniis mo, mahal.
+
+Alam ko sa sarili ko, Ling, na hindi ako perfect at naging masama akong partner, or siguro sabihin na lang nating someone sa 'yo. Marami akong pagkukulang at pagkakamali. Sa part pa lang na masyado akong makulit at matigas ang ulo, hirap na hirap ka na i-handle ako. Sa sobrang tigas at kulit ko, minsan napupuno ka na, katulad na lang kahapon.
+
+Alam kong mahirap talaga akong mahalin. Pero mahal talaga ako ni God para bigyan Niya ako ng isang taong katulad mo na titiisin ang lahat para lang mahalin ako. Sa totoo lang, wala namang special sa akin, eh. Marami kang reason para bumitaw o sumuko, pero pinili mong mag-stay sa akin kahit ganito ako. Napakasuwerte ko sa 'yo.
+
+Alam kong hindi ito ang last or ending ng story natin kasi ikaw na nga ang nagsabi na walang ending na mangyayari. Aayusin ko pa ang sarili ko, mahal. Alam kong sa ngayon, hindi talaga ako 'yung dream mong lalaki na pasok sa standards mo. But hindi naman kita puwedeng pilitin na baguhin 'yung standards mo para sa akin kung ganito ako.
+
+Kung sa ngayon hindi pa talaga ako 'yung standard at dream mong lalaki na makakasama mo habang buhay, iwo-work out ko ang sarili ko, mahal, para makapasok sa standards mo at sa dream mong maging partner. I love you so much. Promise, babaguhin ko ang lahat, mahal. Hindi ko sasayangin lahat ng oras para sa atin. Ibibigay ko 'yung deserve mong love, atensyon, at effort na hinahanap mo.
+
+Mahal na mahal kita, Ling. Ibibigay ko ang lahat para magkaroon ka ng maayos na family in the future. I know marami akong kulang sa ngayon, pero hindi ko hahayaan na habang buhay na lang ganito. Mahal na mahal kita, Amber. Aayusin ko at gagawin kong maayos 'tong relationship na binuo natin. Actually, hindi ako deserving na sabihin na kasama ako sa bumuo. Siguro sa una lang, pero alam ko naman na mula una hanggang ngayon, ikaw ang palaging bumubuo kada nasisira 'tong relasyon na 'to.
+
+Salamat sa lahat, Ling. Amputek, naiiyak ako habang sinusulat ko 'to kasi may background song. Pero ayon, alam kong tiniis mo lahat to the point na hindi mo na ma-express 'yung feelings or emotions mo bilang isang babae sa relationship na 'to. Nakikita at nababasa ko rin ang mga post, notes, at all mo. Alam kong hirap na hirap ka at gustong-gusto mong maayos lahat ng araw na nag-aaway tayo. Mali ko lahat.
+
+Kung mayroon mang parte or araw na may mali ka, alam kong kasalanan ko pa rin 'yon. Tinatanggap ko, mahal, na hindi talaga ako nagpakalalaki sa relasyon na 'to. Naging babae ako at naging duwag. Palagi kong pinipili na bumitaw na lang, kahit dapat ako sana 'yung kumakapit—'yung may mahigpit na kapit sa relasyon na 'to. Kasi unang-una, ako 'yung nagsimula ng relasyong meron tayo ngayon. Maling-mali lahat ng ginawa ko, mahal. Alam kong hindi na mawawala 'yang sakit na nagawa ko diyan sa puso at utak mo.
+
+Marami akong nasira sa 'yo. At napakawalang-kuwenta ko naman kung hindi ko aayusin 'yung bagay na sinira ko, 'di ba? Ngayon, mahal, trust me. Alam kong ilang beses ko nang sinabi 'to na magtiwala ka. Pero ayon, may na-realize ako sa relationship na 'to na tamang-tama sa akin. Nung nag-start tayo as partners, nag-focus ako sa part na hindi lang ikaw 'yung iisipin ko kundi pati rin dapat 'yung sarili ko. Kapag may unfairness na nangyayari, naiinis ako.
+
+Pero may na-miss akong part sa logic na hinold ko all these years na magkasama tayo. If I truly love you, I need to remind myself to lower my pride and ego. Masyado akong tumira sa isang world na dapat hindi lang babae 'yung napapansin. Nagkamali ako. Sobra. Kung mahal talaga kita, kailangan kong tanggapin na maraming araw, taon, at oras ang kailangan kong ilaan para intindihin at tanggapin ka na lang, kahit alam ko sa sarili ko na mali ka. Dati, ginagawa ko lang as joke 'yung saying na toyoin ang mga babae at palaging sila 'yung tama. Minsan naiinis pa nga ako eh, kasi ba't gano'n? Ba't palaging sa kanila na lang pabor 'yung mundo? Pero doon ako nagkamali.
+
+Na-realize ko sa mga araw na hindi tayo nagkakaayos, at sa mga araw na hindi tayo natutuloy sa pag-aaway, may isang bagay na palaging nagiging reason ba't hindi natutuloy 'yung away natin. At ito 'yung kapag pinipilit ko na lang 'yung sarili ko na intindihin ka. Sa totoo lang, hindi naman madaling ma-realize or intindihin 'to. Nagpapahirap lang kasi ang hirap tanggapin, lalo na kapag tinatamaan na ng pride at ego. Sila Mama, nag-fail sila as partners hindi dahil nawalan ng pagmamahal. Kundi dahil nakalimutan ni Papa na intindihin at tanggapin kung paano or ano talaga si Mama.
+
+Never siyang nagpakumbaba, ni hindi niya inintindi 'yung side ni Mama kahit kailan. Pero tignan mo naman, nasa tabi pa rin ni Papa si Mama, at kahit ilang beses sabihin ni Mama na wala na siyang paki kay Papa, alam ko na sinasabi niya lang 'yon para maging matapang sa paningin ko. Ayon, 'yun 'yung bagay na nawala sa akin. 'Yung tanggapin at intindihin ka araw-araw. Kaya ginawa ko 'tong letter na 'to para masabi ko rin sa 'yo na... hindi mo na kailangang magpakatibay pa or maging lalaki sa relasyon na 'to. Alam kong mahirap at mali na ngayon ko lang na-realize 'to dahil nagpakain ako sa pride at ego ko.
+
+I guess hindi lang talaga cheating ang nakakasira sa isang relasyon. Ego at pride din ng partner. Gusto ko lang sabihin sa 'yo, mahal, na kung darating man tayo sa puntong magulo at mahirap ka nang intindihin, tandaan mo na pipilitin ko at tatanggapin ko lahat ng sinasabi mo. Kung sasabihin man ng iba na masyado akong sunod-sunuran o aso—actually, nahihiya ako eh. Nahihiya talaga ako na sabihin na under, takot, o aso ako. Ewan, siguro pride din talaga as lalaki. Ngayon, 'di na importante sa akin 'yon. I really understand na at clear na sa akin kung ano ba talaga 'tong meron tayo at anong kailangan kong isacrifice para sa relasyon na 'to.
+
+I guess hindi lang pera ang need kong ibigay sa 'yo. Pati rin dapat 'yung pag-lower sa pride at ego na meron ako. Pride at ego talaga ang muntik nang sumira sa ating dalawa. At hindi ko na hahayaang mangyari ulit 'yon. Kaya trust me o magtiwala ka lang. Hindi ko na hahayaang mangyari pa lahat ng nangyari dati. Iintindihin kita at hindi ko i-i-invalidate lahat ng nafi-feel mo. Maling-mali lahat ng ginawa at pinaranas ko sa 'yo, mahal. Alam ko 'yan at inaamin ko. Pero binigyan mo pa rin ako ng chance kahit paulit-ulit na nangyayari. Thank you for everything, sa lahat ng binigay mong chance, sa lahat-lahat mahal. Hindi ko na 'to sasayangin. Tandaan mo na mahal na mahal kita.
+
+Hindi scripted 'tong letter kaya super gulo talaga, ito lang talaga 'yung sinasabi ng heart ko kaya magulo na mag-type. Pero ayon. Magpapakalalaki na ako sa relasyong ito at magiging someone or partner na magbu-build at magpapa-improve pa rito. Hindi mo na kailangang magmukhang malakas everyday. Kung nararamdaman mo na naiinis ka for no reason, mainis ka. Kung nagagalit ka, magalit ka. Kung gusto mong sampalin ako, sampalin mo 'ko. I will be honored to serve you, mahal. I love you so much, show your feelings, 'di mo na kailangan tiisin lahat para lang 'di tayo mag-away. I will always understand you at ilalagay ka palagi bilang pinaka-focus sa relasyon na 'to, at hindi 'yung pride at feelings ko na palaging naka-base lang kung fair pa ba or unfair na 'tong relasyon na 'to.
+
+I'm ready to take all of the consequences sa mga nagawa ko. At ready din ako na tanggapin lahat ng unfairness kahit mali ka man or ano. Mali ako ng logic at pag-iintindi sa love na pinanghahawakan ko. Kung mahal talaga kita, hindi lang dapat pinipili kita sa araw-araw at nagpapaka-faithful sa 'yo. Dapat ko ring ma-realize na kailangan kong intindihin ka at palaging isipin na vulnerable ka, at kailangan kong i-protect 'yon kahit galit ako or hindi pa kita maintindihan. Sorry sa lahat ng disappointments na nagawa ko. I'm sorry for everything. Babaguhin ko ang lahat. And aayusin 'tong reality na meron tayo. Alam kong magiging mahirap 'tong college natin. Pero dumaan na rin naman tayo sa ganitong feeling, nagbago lang kasi college na tayo at 'di magkaklase. Nasa atin pa rin naman kung pipiliin natin ang isa't isa sa dulo. Pero alam ko naman na pipiliin at pipiliin mo 'ko.
+
+I trust you. Hindi ko sasayangin 'tong panahon na meron ako. Alam kong hindi pa huli ang lahat. 'Tong chance na 'to, hindi lang ikaw nagbigay nito, kundi pati na rin si GOD. Hindi naman tayo pipilitin ng tadhana na mag-stay at pilitin na tiisin mo lahat ng sakit kung hindi naman talaga tayo para sa isa't isa. Alam kong maraming 'thank you' na akong nasabi, pero... THANK YOU SO MUCH FOR EVERYTHING SA LAHAT, MAHAL. AAYUSIN KO LAHAT NG NASIRA KO. AT MAGIGING PERSON OR PARTNER NA DESERVING AND PASOK SA STANDARDS AT DREAM MO AS A PARTNER FOR YOU. I LOVE YOU SO MUCH MAHAL. HINDI KO ALAM PAANO KO I-E-END 'TONG LETTER NA 'TO KASI 'YUNG HEART KO DAMING GUSTONG SABIHIN PERO NAGHAHALO-HALO NA. PERO ITO NA LANG SIGURO, KASI 'DI NA MALAGAY SA SCREEN, 'DI NA MAGKASYA, LIKE PARANG SA CODING KASI SUPER HABA O DAMI NA NG CHARACTERS. BUT AYON. UULITIN KO ULIT.
+
+Babaguhin ko lahat. Iintindihin kita araw-araw. 'Wag kang matakot na baka sabihin mo 'to tapos mahirapan ako, mapagod, at iwanan ka. Sabihin at i-express mo lahat. Tatanggapin ko lahat kahit magulo at 'di ko maintindihan. 'Di ba gano'n naman talaga 'yung love? Iintindihin ka kahit magulo na ang lahat. Maraming salamat, mahal. HABA NG LETTER. IBANG-IBA 'TO SA MGA LETTERS KO DATI, KASI PALAGI AKONG NAGLE-LETTER NG MAHABA NA ANG MEANING NO'N AY "PAGOD NA AKO". Pero 'di na 'yan mangyayari, mahal. Alam ko na 'yung mali ko at kung ano 'yung reason na nagpapabulag sa akin sa lahat. I'm sorry for everything and HAPPY NATIONAL GIRLFRIEND DAY! I'M SORRY KUNG WALANG MASYADONG MAGARBONG GIFTS. WALA AKONG MONEY, I'M SORRY TALAGA. GRABE 'YUNG IYAK KO KASI 'DI KO MAKUHA 'YUNG 1K. PERO NAG-ISIP AKO NG PARAAN NA PUWEDE KONG GAWIN, AT ITO 'YUNG NAISIP KO AS A WAY TO CELEBRATE AT GREET YOU.
+
+HAPPY NATIONAL GIRLFRIEND DAY, MAHAL! I KNOW HINDI PA CLEARLY STATED NA MAG-GIRLFRIEND AT BOYFRIEND TAYO. BUT YOU DESERVE NA I-GREET KA SA DAY NA 'TO. IKAW ANG THE BEST AND STRONGEST GIRLFRIEND IN THE WORLD. AT UULITIN KO 'YUNG SINABI KO DATI NUNG UNA TAYONG NAG-USAP: "IBANG-IBA KA TALAGA SA MGA BABAE." I LOVE YOU! THANK YOU SO MUCH, MAHAL. I LOVE YOUUUUU! HAPPY NATIONAL GIRLFRIEND DAY, MAHAL! I LOVE YOU! SORRY SA TYPINGS. I LOVE YOU, BASAHIN MO LAHAT MWAPS. HAPPY NATIONAL GIRLFRIEND DAY!!!!`
+        };
+        
+        // ====================================================================
+        // LOGIC & FUNCTIONALITY
+        // ====================================================================
+
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const questionText = document.getElementById('question');
+        const gatekeeper = document.getElementById('gatekeeper');
+        
+        const musicPrompt = document.getElementById('music-prompt');
+        const btnPlayMusic = document.getElementById('btn-play-music');
+        
+        const slideshowScreen = document.getElementById('slideshow-screen');
+        const slideshowContainer = document.getElementById('slideshow-container');
+        const btnToLetters = document.getElementById('btn-to-letters'); 
+        const typingTextElement = document.getElementById('typing-text');
+
+        const app = document.getElementById('app');
+        const bgMusic = document.getElementById('bg-music'); 
+
+        // Gatekeeper Logic
+        const noTexts = [
+            "Bawal nope! Kiss muna.",
+            "Sige na Liling pleaseee...",
+            "Hindi ka makakapasok sige ka.",
+            "Kiss me na kasi.",
+            "Wag na pakipot, kiss na!",
+            "Hanggang sa i-kiss mo ko, di magbubukas 'to."
+        ];
+        let noClickCount = 0;
+
+        btnNo.addEventListener('click', () => {
+            questionText.innerHTML = noTexts[noClickCount % noTexts.length];
+            noClickCount++;
+            
+            const currentFontSize = window.getComputedStyle(btnYes).fontSize;
+            let newFontSize = parseFloat(currentFontSize) * 1.15;
+            if (newFontSize > 28) newFontSize = 28; 
+            btnYes.style.fontSize = `${newFontSize}px`;
+        });
+
+        btnYes.addEventListener('click', () => {
+            gatekeeper.style.opacity = '0';
+            setTimeout(() => {
+                gatekeeper.style.display = 'none';
+                musicPrompt.classList.add('visible');
+            }, 800);
+        });
+
+        // Setup Slideshow Images 
+        slideshowImages.forEach((src, index) => {
+            const img = document.createElement('img');
+            img.src = src;
+            img.className = 'slide-img';
+            img.onerror = function() {
+                this.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23ffdce1'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='12' fill='%23d87093'%3EPhoto %23" + (index+1) + "%3C/text%3E%3C/svg%3E";
+            };
+            if(index === 0) img.classList.add('active');
+            slideshowContainer.appendChild(img);
+        });
+
+        let currentSlide = 0;
+        let slideInterval;
+        let blossomInterval;
+
+        function createBlossom() {
+            if (!slideshowScreen.classList.contains('visible')) return;
+            const blossom = document.createElement('div');
+            blossom.innerHTML = '🌸';
+            blossom.className = 'floating-blossom';
+            blossom.style.left = Math.random() * 100 + 'vw';
+            blossom.style.bottom = '-30px';
+            blossom.style.fontSize = (Math.random() * 1.5 + 0.8) + 'rem';
+            blossom.style.animationDuration = (Math.random() * 4 + 5) + 's';
+            slideshowScreen.appendChild(blossom);
+            setTimeout(() => blossom.remove(), 9000);
+        }
+
+        function startSlideshow() {
+            const slideImgs = document.querySelectorAll('.slide-img');
+            slideInterval = setInterval(() => {
+                if(slideImgs.length > 0) {
+                    slideImgs[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slideImgs.length;
+                    slideImgs[currentSlide].classList.add('active');
+                }
+            }, 4500); 
+            
+            blossomInterval = setInterval(createBlossom, 600); 
+            setTimeout(typeWriterEffect, 1000); 
+        }
+
+        let charIndex = 0;
+        function typeWriterEffect() {
+            if (charIndex < myCustomSubtitle.length) {
+                typingTextElement.textContent += myCustomSubtitle.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriterEffect, 65);
+            } else {
+                typingTextElement.classList.remove('typing-cursor');
+            }
+        }
+
+        // --- AUDIO PLAYLIST LOGIC ---
+        let currentSongIndex = 0;
+
+        bgMusic.addEventListener('ended', () => {
+            currentSongIndex++;
+            if (currentSongIndex >= musicPlaylist.length) {
+                currentSongIndex = 0; 
+            }
+            bgMusic.src = musicPlaylist[currentSongIndex];
+            bgMusic.play().catch(e => console.log("Playback error on next song:", e));
+        });
+
+        btnPlayMusic.addEventListener('click', () => {
+            btnPlayMusic.innerHTML = 'Loading <div class="spinner"></div>';
+            btnPlayMusic.disabled = true;
+
+            bgMusic.src = musicPlaylist[currentSongIndex];
+            bgMusic.play().catch(error => { console.log("Audio playback error:", error); });
+
+            // Exactly 17 seconds loading
+            setTimeout(() => {
+                musicPrompt.style.opacity = '0';
+                setTimeout(() => {
+                    musicPrompt.style.display = 'none';
+                    slideshowScreen.classList.add('visible');
+                    startSlideshow(); 
+                }, 800);
+            }, 17000); 
+        });
+
+        // Subtitle Click -> Reveal Single Polaroid
+        btnToLetters.addEventListener('click', () => {
+            clearInterval(slideInterval); 
+            clearInterval(blossomInterval);
+            
+            slideshowScreen.style.opacity = '0';
+            setTimeout(() => {
+                slideshowScreen.style.display = 'none';
+                app.classList.add('visible');
+                document.body.classList.add('scrollable'); 
+            }, 800);
+        });
+
+
+        // Render Final Single Polaroid
+        const repository = document.getElementById('repository');
+        const modal = document.getElementById('letterModal');
+        const modalDate = document.getElementById('modalDate');
+        const modalBody = document.getElementById('modalBody');
+        const modalGallery = document.getElementById('modalGallery');
+        const closeBtn = document.getElementById('closeBtn');
+
+        const card = document.createElement('div');
+        card.className = 'polaroid';
+        card.style.transform = `rotate(-2deg)`;
+        
+        const letterImgHtml = `<img src="${letterData.image}" alt="${letterData.title}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'%3E%3Crect width=\\'100\\' height=\\'100\\' fill=\\'%23ffdce1\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' font-family=\\'sans-serif\\' font-size=\\'12\\' fill=\\'%23d87093\\'%3EPhoto%3C/text%3E%3C/svg%3E'">`;
+
+        card.innerHTML = `
+            <div class="polaroid-img">${letterImgHtml}</div>
+            <div class="polaroid-title">${letterData.title}</div>
+        `;
+        
+        card.addEventListener('click', () => {
+            modalDate.textContent = letterData.date;
+            modalBody.textContent = letterData.content;
+            
+            // Clear and inject the massive photo gallery dynamically
+            modalGallery.innerHTML = '';
+            slideshowImages.forEach((imgSrc, i) => {
+                const pic = document.createElement('img');
+                pic.src = imgSrc;
+                pic.className = 'modal-gallery-pic';
+                
+                // Add random tilt and sequential delay for the animation
+                const randomRot = (Math.random() * 8 - 4).toFixed(1);
+                pic.style.setProperty('--rot', `${randomRot}deg`);
+                pic.style.animationDelay = `${0.3 + (i * 0.1)}s`; 
+                
+                // Fallback inside modal
+                pic.onerror = function() { this.style.display = 'none'; };
+                
+                modalGallery.appendChild(pic);
+            });
+
+            modal.classList.add('active');
+        });
+
+        repository.appendChild(card);
+
+        closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    </script>
+</body>
+</html>
